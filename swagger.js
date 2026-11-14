@@ -9,7 +9,7 @@ const swaggerSpec = {
   },
   servers: [
     {
-      url: 'http://localhost:3000',
+      url: '/',
       description: 'Local server'
     }
   ],
@@ -17,6 +17,7 @@ const swaggerSpec = {
     '/books': {
       get: {
         summary: 'Get all books',
+        tags: ['Books'],
         responses: {
           '200': {
             description: 'A list of books'
@@ -28,9 +29,39 @@ const swaggerSpec = {
       },
       post: {
         summary: 'Create a book',
+        tags: ['Books'],
+        requestBody: {
+          required: true,
+          content: {
+            'application/json': {
+              schema: {
+                type: 'object',
+                required: ['id', 'authorId', 'title', 'publicationDate'],
+                properties: {
+                  id: { type: 'string' },
+                  authorId: { type: 'string' },
+                  title: { type: 'string' },
+                  publicationDate: { type: 'string' }
+                }
+              },
+              example: {
+                id: 'b4',
+                authorId: 'a1',
+                title: 'Example Book Title',
+                publicationDate: '2026-01-15'
+              }
+            }
+          }
+        },
         responses: {
           '201': {
             description: 'Book created successfully'
+          },
+          '400': {
+            description: 'Missing required fields, duplicate id, or invalid authorId'
+          },
+          '500': {
+            description: 'Unable to create book'
           }
         }
       }
@@ -38,6 +69,7 @@ const swaggerSpec = {
     '/books/{id}': {
       get: {
         summary: 'Get a book by ID',
+        tags: ['Books'],
         parameters: [
           {
             name: 'id',
@@ -52,6 +84,88 @@ const swaggerSpec = {
         responses: {
           '200': {
             description: 'Book details'
+          },
+          '404': {
+            description: 'Book not found'
+          },
+          '500': {
+            description: 'Unable to retrieve book'
+          }
+        }
+      },
+      put: {
+        summary: 'Update a book by ID',
+        tags: ['Books'],
+        parameters: [
+          {
+            name: 'id',
+            in: 'path',
+            required: true,
+            schema: {
+              type: 'string'
+            },
+            description: 'The custom book id, such as b1'
+          }
+        ],
+        requestBody: {
+          required: true,
+          content: {
+            'application/json': {
+              schema: {
+                type: 'object',
+                required: ['authorId', 'title', 'publicationDate'],
+                properties: {
+                  authorId: { type: 'string' },
+                  title: { type: 'string' },
+                  publicationDate: { type: 'string' }
+                }
+              },
+              example: {
+                authorId: 'a2',
+                title: 'Updated Book Title',
+                publicationDate: '2026-02-20'
+              }
+            }
+          }
+        },
+        responses: {
+          '200': {
+            description: 'Book updated successfully'
+          },
+          '400': {
+            description: 'Missing required fields or invalid authorId'
+          },
+          '404': {
+            description: 'Book not found'
+          },
+          '500': {
+            description: 'Unable to update book'
+          }
+        }
+      },
+      delete: {
+        summary: 'Delete a book by ID',
+        tags: ['Books'],
+        parameters: [
+          {
+            name: 'id',
+            in: 'path',
+            required: true,
+            schema: {
+              type: 'string'
+            },
+            description: 'The custom book id, such as b1'
+          }
+        ],
+        responses: {
+          '204': {
+            description: 'Book deleted successfully'
+          },
+          '404': {
+            description: 'Book not found'
+          },
+          '500': {
+            description: 'Unable to delete book'
           }
         }
       }
